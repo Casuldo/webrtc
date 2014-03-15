@@ -101,14 +101,35 @@ socket.on('message', function (message){
   if (message === 'got user media') {
   	maybeStart();
   } else if (message.type === 'offer') {
+	console.log("OFFER!!");
     if (!isInitiator && !isStarted) {
+	  console.log("MaybeStart()...");
       maybeStart();
     }
     pc.setRemoteDescription(new RTCSessionDescription(message));
     doAnswer();
   } else if (message.type === 'answer' && isStarted) {
+	console.log("ANSWER!!");
+	// TEST AREA
+	var streams = pc.getRemoteStreams();
+	for (var stream in streams) {
+	  console.log("Sending local stream: " + stream);
+	  attachMediaStream(remoteVideo, stream);
+	  remoteStream = stream;
+	}
+	var streams = pc.remoteStreams;
+	for (var stream in streams) {
+	  console.log("Sending local stream: " + stream);
+	  attachMediaStream(remoteVideo, stream);
+	  remoteStream = stream;
+	}
+	/////////////
+	
     pc.setRemoteDescription(new RTCSessionDescription(message));
+	
+	
   } else if (message.type === 'candidate' && isStarted) {
+	console.log("CANDIDATE!!");
     var candidate = new RTCIceCandidate({sdpMLineIndex:message.label,
       candidate:message.candidate});
     pc.addIceCandidate(candidate);
@@ -293,12 +314,12 @@ function doCall() {
   constraints = mergeConstraints(constraints, sdpConstraints);
   console.log('Sending offer to peer, with constraints: \n' +
     '  \'' + JSON.stringify(constraints) + '\'.');
-  pc.createOffer(setLocalAndSendMessage, null, constraints);
+  pc.createOffer(setLocalAndSendMessage, setErrorMessage, constraints);
 }
 
 function doAnswer() {
   console.log('Sending answer to peer.');
-  pc.createAnswer(setLocalAndSendMessage, null, sdpConstraints);
+  pc.createAnswer(setLocalAndSendMessage, setErrorMessage, sdpConstraints);
 }
 
 function mergeConstraints(cons1, cons2) {
@@ -314,7 +335,12 @@ function setLocalAndSendMessage(sessionDescription) {
   // Set Opus as the preferred codec in SDP if Opus is present.
   sessionDescription.sdp = preferOpus(sessionDescription.sdp);
   pc.setLocalDescription(sessionDescription);
+  console.log("sending message: " + sessionDescription);
   sendMessage(sessionDescription);
+}
+
+function setErrorMessage() {
+	sendMessage('OK, we fucked this up...');
 }
 
 function requestTurn(turn_url) {
@@ -349,6 +375,7 @@ function requestTurn(turn_url) {
 function handleRemoteStreamAdded(event) {
   console.log('Remote stream added.');
  // reattachMediaStream(miniVideo, localVideo);
+ console.log(event);
   attachMediaStream(remoteVideo, event.stream);
   remoteStream = event.stream;
 //  waitForRemoteVideo();
