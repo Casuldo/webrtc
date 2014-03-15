@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/Casuldo/webrtc/issues"
   },
-  "homepage": "https://github.com/Casuldo/webrtc"
+  "homepage": "https://github.com/Casuldo/webrtc",
+  "dependencies": {
+    "node-static": "^0.7.3",
+    "socket.io": "^0.9.16"
+  }
 }
