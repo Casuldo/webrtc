@@ -3,7 +3,7 @@ var http = require('http');
 var file = new(static.Server)('C:\\Users\\Kassu\\WebRTC\\room');
 var app = http.createServer(function (req, res) {
   file.serve(req, res);
-}).listen(1234);
+}).listen(process.env.PORT || 5000);
 
 
 // var express = require('express');
