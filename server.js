@@ -1,6 +1,6 @@
 var static = require('node-static');
 var http = require('http');
-var file = new(static.Server)('C:\\Users\\Kassu\\WebRTC\\room');
+var file = new(static.Server)();
 var app = http.createServer(function (req, res) {
   file.serve(req, res);
 }).listen(process.env.PORT || 5000);
